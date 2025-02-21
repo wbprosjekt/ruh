@@ -4,40 +4,63 @@
 
   let reports = [];
   let user = null;
+  let loading = true;
 
   async function checkAdminAccess() {
-    const { data: userData, error } = await supabase.auth.getUser();
-    if (error || !userData?.user?.email) {
-      window.location.href = '/admin/login'; // Redirect if not logged in
-      return;
-    }
+    try {
+      // Check current session
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError || !sessionData?.session) {
+        window.location.href = '/admin/login';
+        return;
+      }
 
-    // Check if user is in admin table
-    const { data, error: adminError } = await supabase
-      .from('admin_users')
-      .select('*')
-      .eq('email', userData.user.email);
+      user = sessionData.session.user;
 
-    if (adminError || data.length === 0) {
-      window.location.href = '/admin/login'; // Redirect if not admin
-    } else {
-      user = userData.user;
-      fetchReports();
+      // Check if the user is in the admin table
+      const { data, error: adminError } = await supabase
+        .from('admin_users')
+        .select('*')
+        .eq('email', user.email);
+
+      if (adminError || data.length === 0) {
+        window.location.href = '/admin/login';
+      } else {
+        fetchReports();
+      }
+    } catch (err) {
+      console.error('Authentication error:', err);
+    } finally {
+      loading = false;
     }
   }
 
   async function fetchReports() {
-    const { data, error } = await supabase.from('ruh_rapporter').select('*').order('dato', { ascending: false });
-    if (error) console.error('Error fetching reports:', error);
-    else reports = data;
+    try {
+      const { data, error } = await supabase.from('ruh_rapporter').select('*').order('dato', { ascending: false });
+      if (error) console.error('Error fetching reports:', error);
+      else reports = data;
+    } catch (err) {
+      console.error('Fetching reports error:', err);
+    }
   }
 
   async function logout() {
     await supabase.auth.signOut();
-    window.location.href = '/admin/login'; // Redirect to login page
+    window.location.href = '/admin/login';
   }
 
-  onMount(checkAdminAccess);
+  onMount(() => {
+    supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT') {
+        window.location.href = '/admin/login';
+      } else if (session) {
+        checkAdminAccess();
+      }
+    });
+
+    checkAdminAccess();
+  });
 </script>
 
 <div class="min-h-screen flex flex-col items-center p-6">
@@ -47,7 +70,9 @@
 
   <h1 class="text-3xl font-bold mb-6">Admin - Avviksrapporter</h1>
 
-  {#if reports.length > 0}
+  {#if loading}
+    <p>Laster...</p>
+  {:else if reports.length > 0}
     <table class="w-full max-w-3xl border-collapse border border-gray-300">
       <thead>
         <tr class="bg-gray-200">
