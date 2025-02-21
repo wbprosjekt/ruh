@@ -123,8 +123,8 @@
 </style>
 
 <div class="min-h-screen w-full p-4 bg-gray-100 flex flex-col items-center">
-  <img src="/logo.png" alt="Company Logo" class="w-16 h-auto mb-4" />
-  <h1 class="text-3xl font-bold text-primary text-center mb-6">RUH Rapportering</h1>
+  <img src="/logo.png" alt="Company Logo" class="w-12 h-auto mb-4 max-w-xs" />
+  <h1 class="text-3xl font-bold text-primary text-center mb-6">Registrer avvik</h1>
 
   {#if success}
     <p class="success-message">✅ Rapport sendt inn!</p>
@@ -162,3 +162,4 @@
     </form>
   </div>
 </div>
+
