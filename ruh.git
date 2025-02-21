@@ -1,0 +1,100 @@
+import { writable } from 'svelte/store';
+import { supabase } from '$lib/supabase';
+
+// Lagre brukerens rapportdata
+export const reportData = writable({
+  sted: '',
+  dato: '',
+  klokkeslett: '',
+  beskrivelse: '',
+  resultat: '',
+  aarsak: '',
+  tiltak: '',
+  bilde: null
+});
+
+<script>
+  import { reportData } from './stores';
+  import { onMount } from 'svelte';
+
+  let sted = '';
+  let dato = '';
+  let klokkeslett = '';
+  let beskrivelse = '';
+  let resultat = '';
+  let aarsak = '';
+  let tiltak = '';
+  let bilde = null;
+  let bildeUrl = '';
+
+  async function handleFileUpload(event) {
+    const file = event.target.files[0];
+    if (file) {
+      const { data, error } = await supabase.storage.from('ruh-bilder').upload(`images/${file.name}`, file);
+      if (error) {
+        console.error('Feil ved opplasting:', error);
+      } else {
+        bildeUrl = `${supabase.storage.from('ruh-bilder').getPublicUrl(data.path)}`;
+      }
+    }
+  }
+
+  async function submitReport() {
+    const { data, error } = await supabase.from('ruh_rapporter').insert([
+      {
+        sted,
+        dato,
+        klokkeslett,
+        beskrivelse,
+        resultat,
+        aarsak,
+        tiltak,
+        bilde_url: bildeUrl
+      }
+    ]);
+    if (error) {
+      console.error('Feil ved innsending:', error);
+    } else {
+      alert('RUH-rapport sendt inn!');
+      sted = dato = klokkeslett = beskrivelse = resultat = aarsak = tiltak = '';
+      bildeUrl = '';
+    }
+  }
+</script>
+
+<form on:submit|preventDefault={submitReport}>
+  <label>Sted:
+    <input type="text" bind:value={sted} required />
+  </label>
+  
+  <label>Dato:
+    <input type="date" bind:value={dato} required />
+  </label>
+  
+  <label>Klokkeslett:
+    <input type="time" bind:value={klokkeslett} required />
+  </label>
+  
+  <label>Beskrivelse av hendelsen:
+    <textarea bind:value={beskrivelse} required></textarea>
+  </label>
+  
+  <label>Resultat/utfall:
+    <textarea bind:value={resultat} required></textarea>
+  </label>
+  
+  <label>Årsak:
+    <textarea bind:value={aarsak} required></textarea>
+  </label>
+  
+  <label>Tiltak:
+    <textarea bind:value={tiltak} required></textarea>
+  </label>
+  
+  <label>Last opp bilde:
+    <input type="file" accept="image/*" on:change={handleFileUpload} />
+  </label>
+  
+  <button type="submit">Send inn rapport</button>
+</form>
+
