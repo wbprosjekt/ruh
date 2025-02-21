@@ -1,6 +1,6 @@
 <script>
-  import { onMount } from 'svelte';
   import { supabase } from '$lib/supabase';
+  import { onMount } from 'svelte';
 
   let sted = '';
   let dato = '';
@@ -11,113 +11,118 @@
   let tiltak = '';
   let bildeUrl = '';
   let reports = [];
-
-  async function fetchReports() {
-    const { data, error } = await supabase.from('ruh_rapporter').select('*').order('opprettet', { ascending: false });
-    if (error) console.error('Feil ved henting:', error);
-    else reports = data;
-  }
+  let loading = false;
 
   async function handleFileUpload(event) {
     const file = event.target.files[0];
-    if (file) {
-      const filePath = `images/${Date.now()}_${file.name}`;
-      const { data, error } = await supabase.storage.from('ruh-bilder').upload(filePath, file);
-
-      if (error) {
-        console.error('Feil ved opplasting:', error);
-      } else {
-        bildeUrl = supabase.storage.from('ruh-bilder').getPublicUrl(filePath);
-      }
+    if (!file) return;
+    
+    const filePath = `images/${Date.now()}_${file.name}`;
+    console.log("Uploading file to:", filePath);
+    const { data, error } = await supabase.storage.from('ruh-bilder').upload(filePath, file);
+    
+    if (error) {
+      console.error("❌ File upload error:", error);
+      alert("Feil ved opplasting: " + error.message);
+    } else {
+      bildeUrl = supabase.storage.from('ruh-bilder').getPublicUrl(filePath);
+      console.log("✅ File uploaded successfully:", bildeUrl);
     }
   }
 
   async function submitReport() {
-    const { data, error } = await supabase.from('ruh_rapporter').insert([
-      {
-        sted,
-        dato,
-        klokkeslett,
-        beskrivelse,
-        resultat,
-        aarsak,
-        tiltak,
-        bilde_url: bildeUrl
-      }
-    ]);
+    loading = true;
+    console.log("Submitting report...");
+
+    const reportData = {
+      sted,
+      dato,
+      klokkeslett,
+      beskrivelse,
+      resultat,
+      aarsak,
+      tiltak,
+      bilde_url: bildeUrl
+    };
+
+    const { data, error } = await supabase.from('ruh_rapporter').insert([reportData], { returning: 'minimal' });
+    
     if (error) {
-      console.error('Feil ved innsending:', error);
+      console.error("❌ Error submitting report:", error);
+      alert("Feil ved innsending: " + error.message);
     } else {
-      alert('RUH-rapport sendt inn!');
+      console.log("✅ Report successfully submitted:", data);
+      alert("RUH-rapport sendt inn!");
+
+      // Clear form fields
       sted = dato = klokkeslett = beskrivelse = resultat = aarsak = tiltak = '';
       bildeUrl = '';
       fetchReports();
     }
+    loading = false;
   }
 
-  onMount(() => {
-    fetchReports();
+  async function fetchReports() {
+    console.log("Fetching reports...");
+    const { data, error } = await supabase.from('ruh_rapporter').select('*').order('opprettet', { ascending: false });
+    
+    if (error) {
+      console.error("❌ Error fetching reports:", error);
+    } else {
+      reports = data;
+      console.log("✅ Reports fetched successfully:", reports);
+    }
+  }
 
-    // Lytt etter sanntidsoppdateringer
-    supabase
-      .channel('ruh_rapporter')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'ruh_rapporter' }, (payload) => {
-        reports = [payload.new, ...reports];
-      })
-      .subscribe();
-  });
+  onMount(fetchReports);
 </script>
 
-<h1>RUH-rapportering</h1>
-<form on:submit|preventDefault={submitReport}>
-  <label>Sted:
-    <input type="text" bind:value={sted} required />
-  </label>
-  
-  <label>Dato:
-    <input type="date" bind:value={dato} required />
-  </label>
-  
-  <label>Klokkeslett:
-    <input type="time" bind:value={klokkeslett} required />
-  </label>
-  
-  <label>Beskrivelse av hendelsen:
-    <textarea bind:value={beskrivelse} required></textarea>
-  </label>
-  
-  <label>Resultat/utfall:
-    <textarea bind:value={resultat} required></textarea>
-  </label>
-  
-  <label>Årsak:
-    <textarea bind:value={aarsak} required></textarea>
-  </label>
-  
-  <label>Tiltak:
-    <textarea bind:value={tiltak} required></textarea>
-  </label>
-  
-  <label>Last opp bilde:
-    <input type="file" accept="image/*" on:change={handleFileUpload} />
-  </label>
-  
-  <button type="submit">Send inn rapport</button>
-</form>
+<div class="max-w-xl mx-auto mt-10 p-6 bg-white shadow-md rounded-lg">
+  <h1 class="text-2xl font-bold text-gray-800 mb-4">RUH Rapportering</h1>
 
-<h1>RUH-rapporter</h1>
-{#if reports.length === 0}
-  <p>Ingen rapporter ennå.</p>
-{:else}
-  <ul>
-    {#each reports as report}
-      <li>
-        <strong>{report.sted}</strong> - {report.dato}
-        <p>{report.beskrivelse}</p>
-        {#if report.bilde_url}
-          <img src={report.bilde_url} alt="Vedlagt bilde" width="200">
-        {/if}
-      </li>
-    {/each}
-  </ul>
-{/if}
+  <form on:submit|preventDefault={submitReport} class="space-y-4">
+    <label class="block">
+      <span class="text-gray-700">Sted:</span>
+      <input type="text" bind:value={sted} required class="mt-1 block w-full p-2 border rounded-md focus:ring focus:ring-blue-300">
+    </label>
+
+    <label class="block">
+      <span class="text-gray-700">Dato:</span>
+      <input type="date" bind:value={dato} required class="mt-1 block w-full p-2 border rounded-md focus:ring focus:ring-blue-300">
+    </label>
+
+    <label class="block">
+      <span class="text-gray-700">Klokkeslett:</span>
+      <input type="time" bind:value={klokkeslett} required class="mt-1 block w-full p-2 border rounded-md focus:ring focus:ring-blue-300">
+    </label>
+
+    <label class="block">
+      <span class="text-gray-700">Beskrivelse av hendelsen:</span>
+      <textarea bind:value={beskrivelse} required class="mt-1 block w-full p-2 border rounded-md focus:ring focus:ring-blue-300"></textarea>
+    </label>
+
+    <label class="block">
+      <span class="text-gray-700">Resultat/utfall:</span>
+      <textarea bind:value={resultat} required class="mt-1 block w-full p-2 border rounded-md focus:ring focus:ring-blue-300"></textarea>
+    </label>
+
+    <label class="block">
+      <span class="text-gray-700">Årsak:</span>
+      <textarea bind:value={aarsak} required class="mt-1 block w-full p-2 border rounded-md focus:ring focus:ring-blue-300"></textarea>
+    </label>
+
+    <label class="block">
+      <span class="text-gray-700">Tiltak:</span>
+      <textarea bind:value={tiltak} required class="mt-1 block w-full p-2 border rounded-md focus:ring focus:ring-blue-300"></textarea>
+    </label>
+
+    <label class="block">
+      <span class="text-gray-700">Last opp bilde:</span>
+      <input type="file" accept="image/*" on:change={handleFileUpload} class="mt-1 block w-full p-2 border rounded-md focus:ring focus:ring-blue-300">
+    </label>
+
+    <button type="submit" class="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 transition" {disabled:loading}>
+      {loading ? 'Sender...' : 'Send inn rapport'}
+    </button>
+  </form>
+</div>
