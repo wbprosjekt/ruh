@@ -11,6 +11,7 @@
       const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
       if (sessionError || !sessionData?.session) {
         console.warn("🔴 User is not logged in, redirecting...");
+        window.location.href = "/admin/login";
         return;
       }
 
@@ -21,12 +22,14 @@
       const { data, error: adminError } = await supabase
         .from("admin_users")
         .select("email")
-        .eq("email", user.email);
+        .eq("email", user.email)
+        .maybeSingle(); // ✅ Ensures we expect 1 row or null
 
       console.log("🔍 Admin check result:", data);
 
-      if (adminError || !data || data.length === 0) {
+      if (adminError || !data) {
         console.warn("🚨 User is not an admin, redirecting...");
+        window.location.href = "/admin/login";
         return;
       }
 
@@ -110,4 +113,3 @@
     <p class="text-center text-red-500">⚠️ Ingen rapporter funnet.</p>
   {/if}
 </div>
-
