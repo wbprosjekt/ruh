@@ -9,6 +9,8 @@
   // Fetch reports from Supabase
   async function fetchReports() {
     try {
+      console.log("🔄 Fetching reports...");
+
       const { data, error } = await supabase
         .from("ruh_rapporter")
         .select("*")
@@ -20,7 +22,12 @@
         return;
       }
 
-      reports = data || [];
+      if (!data || data.length === 0) {
+        console.warn("⚠️ No reports found in Supabase.");
+        errorMessage = "Ingen rapporter funnet.";
+      } else {
+        reports = data;
+      }
     } catch (error) {
       console.error("🚨 Unexpected error:", error);
       errorMessage = "Kunne ikke hente rapporter. Prøv igjen senere.";
@@ -44,12 +51,19 @@
     Registrerte RUH-rapporter
   </h1>
 
+  <!-- Loading Indicator -->
   {#if loading}
     <p class="text-center text-gray-500">Laster inn rapporter...</p>
+  
+  <!-- Error Message -->
   {:else if errorMessage}
     <p class="text-center text-red-500">{errorMessage}</p>
+  
+  <!-- No Reports Found -->
   {:else if reports.length === 0}
     <p class="text-center text-gray-500">Ingen rapporter funnet.</p>
+  
+  <!-- Display Reports -->
   {:else}
     <div class="space-y-6">
       {#each reports as report}
