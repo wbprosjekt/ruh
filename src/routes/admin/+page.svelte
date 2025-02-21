@@ -8,26 +8,27 @@
 
   async function checkAdminAccess() {
     try {
-      // Check current session
       const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
       if (sessionError || !sessionData?.session) {
+        console.warn('User is not logged in, redirecting...');
         window.location.href = '/admin/login';
         return;
       }
 
       user = sessionData.session.user;
 
-      // Check if the user is in the admin table
       const { data, error: adminError } = await supabase
         .from('admin_users')
-        .select('*')
+        .select('email')
         .eq('email', user.email);
 
-      if (adminError || data.length === 0) {
+      if (adminError || !data || data.length === 0) {
+        console.warn('User is not an admin, redirecting...');
         window.location.href = '/admin/login';
-      } else {
-        fetchReports();
+        return;
       }
+
+      fetchReports();
     } catch (err) {
       console.error('Authentication error:', err);
     } finally {
@@ -38,8 +39,11 @@
   async function fetchReports() {
     try {
       const { data, error } = await supabase.from('ruh_rapporter').select('*').order('dato', { ascending: false });
-      if (error) console.error('Error fetching reports:', error);
-      else reports = data;
+      if (error) {
+        console.error('Error fetching reports:', error);
+      } else {
+        reports = data;
+      }
     } catch (err) {
       console.error('Fetching reports error:', err);
     }
@@ -51,15 +55,14 @@
   }
 
   onMount(() => {
-    supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_OUT') {
+    supabase.auth.getSession().then(({ data, error }) => {
+      if (error || !data?.session) {
+        console.warn('No session found, redirecting...');
         window.location.href = '/admin/login';
-      } else if (session) {
-        checkAdminAccess();
+        return;
       }
+      checkAdminAccess();
     });
-
-    checkAdminAccess();
   });
 </script>
 
@@ -99,4 +102,3 @@
     <p class="text-center">Ingen rapporter funnet.</p>
   {/if}
 </div>
-
