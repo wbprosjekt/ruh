@@ -80,28 +80,24 @@
   onMount(fetchReports);
 </script>
 
-<div class="min-h-screen w-full p-4 bg-gray-100">
-  <h1 class="text-3xl font-bold text-primary text-center">RUH Rapportering</h1>
+<div class="min-h-screen w-full p-4 bg-gray-100 flex flex-col items-center">
+  <h1 class="text-3xl font-bold text-primary text-center mb-6">RUH Rapportering</h1>
 
-  {#if success}
-    <p class="success-message">✅ Rapport sendt inn!</p>
-  {/if}
-
-  <form on:submit|preventDefault={submitReport} class="mt-4 space-y-4">
-    <label class="block">
-      <span>Sted:</span>
-      <input type="text" bind:value={sted} required class="w-full p-2 border rounded-md" />
-    </label>
-
-    <label class="block">
-      <span>Dato:</span>
-      <input type="date" bind:value={dato} required class="w-full p-2 border rounded-md" />
-    </label>
-
-    <label class="block">
-      <span>Klokkeslett:</span>
-      <input type="time" bind:value={klokkeslett} required class="w-full p-2 border rounded-md" />
-    </label>
+  <form on:submit|preventDefault={submitReport} class="w-full max-w-lg bg-white shadow-md rounded-lg p-6 space-y-4">
+    <div class="grid grid-cols-1 gap-4">
+      <label class="block">
+        <span>Sted:</span>
+        <input type="text" bind:value={sted} required class="w-full p-2 border rounded-md" />
+      </label>
+      <label class="block">
+        <span>Dato:</span>
+        <input type="date" bind:value={dato} required class="w-full p-2 border rounded-md" />
+      </label>
+      <label class="block">
+        <span>Klokkeslett:</span>
+        <input type="time" bind:value={klokkeslett} required class="w-full p-2 border rounded-md" />
+      </label>
+    </div>
 
     <label class="block">
       <span>Beskrivelse:</span>
@@ -137,9 +133,9 @@
   {#if reports.length === 0}
     <p>Ingen rapporter sendt inn ennå.</p>
   {:else}
-    <div class="mt-4 space-y-4">
+    <div class="mt-4 w-full max-w-lg space-y-4">
       {#each reports as report}
-        <div class="p-4 bg-white shadow rounded-md">
+        <div class="p-4 bg-white shadow-md rounded-lg">
           <p class="font-bold text-lg">📍 {report.sted} | 📅 {report.dato} | ⏰ {report.klokkeslett}</p>
           <p><strong>📝 Beskrivelse:</strong> {report.beskrivelse}</p>
           <p><strong>📌 Resultat:</strong> {report.resultat}</p>
@@ -153,4 +149,3 @@
     </div>
   {/if}
 </div>
-
