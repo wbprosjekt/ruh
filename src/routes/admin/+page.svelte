@@ -11,7 +11,6 @@
       const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
       if (sessionError || !sessionData?.session) {
         console.warn("🔴 User is not logged in, redirecting...");
-        window.location.href = "/admin/login";
         return;
       }
 
@@ -28,7 +27,6 @@
 
       if (adminError || !data || data.length === 0) {
         console.warn("🚨 User is not an admin, redirecting...");
-        window.location.href = "/admin/login";
         return;
       }
 
@@ -65,15 +63,14 @@
     window.location.href = '/admin/login';
   }
 
-  onMount(() => {
-    supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_IN' && session) {
-        checkAdminAccess();
-      } else if (event === 'SIGNED_OUT') {
-        console.warn('User signed out, redirecting...');
-        window.location.href = '/admin/login';
-      }
-    });
+  onMount(async () => {
+    const { data: session } = await supabase.auth.getSession();
+    if (session?.session) {
+      await checkAdminAccess();
+    } else {
+      console.warn("No session found, redirecting to login...");
+      window.location.href = '/admin/login';
+    }
   });
 </script>
 
