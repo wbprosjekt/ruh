@@ -123,7 +123,7 @@
 </style>
 
 <div class="min-h-screen w-full p-4 bg-gray-100 flex flex-col items-center">
-  <img src="/logo.png" alt="Company Logo" class="w-12 h-auto mb-4 max-w-xs" />
+  <img src="/logo.png" alt="Company Logo" class="w-1/10 h-auto mb-4 max-w-xs" style="max-width: 10%; height: auto;" />
   <h1 class="text-3xl font-bold text-primary text-center mb-6 w-full flex justify-center">Registrer avvik</h1>
 
   {#if success}
