@@ -11,7 +11,6 @@
       const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
       if (sessionError || !sessionData?.session) {
         console.warn('User is not logged in, redirecting...');
-        window.location.href = '/admin/login';
         return;
       }
 
@@ -24,7 +23,6 @@
 
       if (adminError || !data || data.length === 0) {
         console.warn('User is not an admin, redirecting...');
-        window.location.href = '/admin/login';
         return;
       }
 
@@ -55,13 +53,13 @@
   }
 
   onMount(() => {
-    supabase.auth.getSession().then(({ data, error }) => {
-      if (error || !data?.session) {
-        console.warn('No session found, redirecting...');
+    supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        checkAdminAccess();
+      } else if (event === 'SIGNED_OUT') {
+        console.warn('User signed out, redirecting...');
         window.location.href = '/admin/login';
-        return;
       }
-      checkAdminAccess();
     });
   });
 </script>
@@ -102,3 +100,4 @@
     <p class="text-center">Ingen rapporter funnet.</p>
   {/if}
 </div>
+
