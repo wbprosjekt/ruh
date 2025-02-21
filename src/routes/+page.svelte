@@ -83,7 +83,7 @@
 </script>
 
 <div class="min-h-screen w-full p-4 bg-gray-100 flex flex-col items-center">
-  <img src="/company-logo.png" alt="Company Logo" class="w-32 mb-4" />
+  <img src="/logo.png" alt="Company Logo" class="w-32 mb-4" />
   <h1 class="text-3xl font-bold text-primary text-center mb-6">RUH Rapportering</h1>
 
   {#if success}
@@ -91,37 +91,38 @@
   {/if}
 
   <form on:submit|preventDefault={submitReport} class="w-full max-w-lg bg-white shadow-md rounded-lg p-6 space-y-4 flex flex-col">
-    <label class="block w-full">
-      <span>Sted:</span>
-      <input type="text" bind:value={sted} required class="w-full p-2 border rounded-md" />
-    </label>
-    <label class="block w-full">
-      <span>Dato:</span>
-      <input type="date" bind:value={dato} required class="w-full p-2 border rounded-md" />
-    </label>
-    <label class="block w-full">
-      <span>Klokkeslett:</span>
-      <input type="time" bind:value={klokkeslett} required class="w-full p-2 border rounded-md" />
-    </label>
-    <label class="block w-full">
-      <span>Beskrivelse:</span>
-      <textarea bind:value={beskrivelse} required class="w-full p-2 border rounded-md"></textarea>
-    </label>
-    <label class="block w-full">
-      <span>Resultat:</span>
-      <textarea bind:value={resultat} required class="w-full p-2 border rounded-md"></textarea>
-    </label>
-    <label class="block w-full">
-      <span>Årsak:</span>
-      <textarea bind:value={aarsak} required class="w-full p-2 border rounded-md"></textarea>
-    </label>
-    <label class="block w-full">
-      <span>Tiltak:</span>
-      <textarea bind:value={tiltak} required class="w-full p-2 border rounded-md"></textarea>
-    </label>
+    <div class="flex flex-col space-y-4">
+      <label class="block">
+        <span>Sted:</span>
+        <input type="text" bind:value={sted} required class="w-full p-2 border rounded-md" />
+      </label>
+      <label class="block">
+        <span>Dato:</span>
+        <input type="date" bind:value={dato} required class="w-full p-2 border rounded-md" />
+      </label>
+      <label class="block">
+        <span>Klokkeslett:</span>
+        <input type="time" bind:value={klokkeslett} required class="w-full p-2 border rounded-md" />
+      </label>
+      <label class="block">
+        <span>Beskrivelse:</span>
+        <textarea bind:value={beskrivelse} required class="w-full p-2 border rounded-md"></textarea>
+      </label>
+      <label class="block">
+        <span>Resultat:</span>
+        <textarea bind:value={resultat} required class="w-full p-2 border rounded-md"></textarea>
+      </label>
+      <label class="block">
+        <span>Årsak:</span>
+        <textarea bind:value={aarsak} required class="w-full p-2 border rounded-md"></textarea>
+      </label>
+      <label class="block">
+        <span>Tiltak:</span>
+        <textarea bind:value={tiltak} required class="w-full p-2 border rounded-md"></textarea>
+      </label>
+    </div>
     <button type="submit" disabled={loading} class="w-full bg-blue-600 text-white p-3 rounded-md hover:bg-blue-700">
       {loading ? '<span class="loading"></span> Sender...' : "Send inn rapport"}
     </button>
   </form>
 </div>
-
