@@ -15,13 +15,15 @@
         .order("dato", { ascending: false });
 
       if (error) {
-        throw new Error(error.message);
+        console.error("❌ Error fetching reports:", error.message);
+        errorMessage = `Feil ved henting av rapporter: ${error.message}`;
+        return;
       }
 
       reports = data || [];
     } catch (error) {
-      console.error("❌ Error fetching reports:", error);
-      errorMessage = "Kunne ikke hente rapporter.";
+      console.error("🚨 Unexpected error:", error);
+      errorMessage = "Kunne ikke hente rapporter. Prøv igjen senere.";
     } finally {
       loading = false;
     }
@@ -32,6 +34,12 @@
 
 <!-- UI Layout -->
 <main class="container mx-auto px-4 py-8">
+  <!-- Company Logo -->
+  <div class="flex justify-center mb-6">
+    <img src="/logo.png" alt="WB Prosjekt AS Logo" class="w-32 h-auto" />
+  </div>
+
+  <!-- Title -->
   <h1 class="text-center text-3xl font-bold text-blue-600 mb-6">
     Registrerte RUH-rapporter
   </h1>
@@ -51,6 +59,18 @@
           </h2>
           <p class="text-gray-600">📅 {report.dato} ⏰ {report.klokkeslett}</p>
           <p class="mt-2 text-gray-700">📝 {report.beskrivelse}</p>
+          
+          {#if report.resultat}
+            <p class="mt-1 text-gray-700">🎯 Resultat: {report.resultat}</p>
+          {/if}
+
+          {#if report.aarsak}
+            <p class="mt-1 text-gray-700">⚠️ Årsak: {report.aarsak}</p>
+          {/if}
+
+          {#if report.tiltak}
+            <p class="mt-1 text-gray-700">✅ Tiltak: {report.tiltak}</p>
+          {/if}
 
           {#if report.bilde_url}
             <img
@@ -68,5 +88,16 @@
 <style>
   main {
     max-width: 800px;
+  }
+
+  .container {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  h1 {
+    color: #004aad;
   }
 </style>
