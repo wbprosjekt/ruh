@@ -83,14 +83,14 @@
 </script>
 
 <div class="min-h-screen w-full p-4 bg-gray-100 flex flex-col items-center">
-  <img src="/logo.png" alt="Company Logo" class="w-32 mb-4" />
+  <img src="/logo.png" alt="Company Logo" class="w-24 h-auto mb-4" />
   <h1 class="text-3xl font-bold text-primary text-center mb-6">RUH Rapportering</h1>
 
   {#if success}
     <p class="success-message bg-green-200 text-green-800 p-3 rounded-md">✅ Rapport sendt inn!</p>
   {/if}
 
-  <form on:submit|preventDefault={submitReport} class="w-full max-w-lg bg-white shadow-md rounded-lg p-6 space-y-4 flex flex-col">
+  <form on:submit|preventDefault={submitReport} class="w-full max-w-lg bg-white shadow-md rounded-lg p-6 space-y-4">
     <div class="flex flex-col space-y-4">
       <label class="block">
         <span>Sted:</span>
@@ -126,3 +126,4 @@
     </button>
   </form>
 </div>
+
