@@ -67,7 +67,9 @@
       alert("Feil ved innsending: " + error.message);
     } else {
       console.log("✅ Report successfully submitted:", data);
-      success = true;
+      setTimeout(() => {
+        success = true;
+      }, 2000); // Delay success message by 2 seconds
       fetchReports();
 
       // Clear form fields
@@ -81,71 +83,45 @@
 </script>
 
 <div class="min-h-screen w-full p-4 bg-gray-100 flex flex-col items-center">
+  <img src="/company-logo.png" alt="Company Logo" class="w-32 mb-4" />
   <h1 class="text-3xl font-bold text-primary text-center mb-6">RUH Rapportering</h1>
 
-  <form on:submit|preventDefault={submitReport} class="w-full max-w-lg bg-white shadow-md rounded-lg p-6 space-y-4">
-    <div class="grid grid-cols-1 gap-4">
-      <label class="block">
-        <span>Sted:</span>
-        <input type="text" bind:value={sted} required class="w-full p-2 border rounded-md" />
-      </label>
-      <label class="block">
-        <span>Dato:</span>
-        <input type="date" bind:value={dato} required class="w-full p-2 border rounded-md" />
-      </label>
-      <label class="block">
-        <span>Klokkeslett:</span>
-        <input type="time" bind:value={klokkeslett} required class="w-full p-2 border rounded-md" />
-      </label>
-    </div>
+  {#if success}
+    <p class="success-message bg-green-200 text-green-800 p-3 rounded-md">✅ Rapport sendt inn!</p>
+  {/if}
 
+  <form on:submit|preventDefault={submitReport} class="w-full max-w-lg bg-white shadow-md rounded-lg p-6 space-y-4">
+    <label class="block">
+      <span>Sted:</span>
+      <input type="text" bind:value={sted} required class="w-full p-2 border rounded-md" />
+    </label>
+    <label class="block">
+      <span>Dato:</span>
+      <input type="date" bind:value={dato} required class="w-full p-2 border rounded-md" />
+    </label>
+    <label class="block">
+      <span>Klokkeslett:</span>
+      <input type="time" bind:value={klokkeslett} required class="w-full p-2 border rounded-md" />
+    </label>
     <label class="block">
       <span>Beskrivelse:</span>
       <textarea bind:value={beskrivelse} required class="w-full p-2 border rounded-md"></textarea>
     </label>
-
     <label class="block">
       <span>Resultat:</span>
       <textarea bind:value={resultat} required class="w-full p-2 border rounded-md"></textarea>
     </label>
-
     <label class="block">
       <span>Årsak:</span>
       <textarea bind:value={aarsak} required class="w-full p-2 border rounded-md"></textarea>
     </label>
-
     <label class="block">
       <span>Tiltak:</span>
       <textarea bind:value={tiltak} required class="w-full p-2 border rounded-md"></textarea>
     </label>
-
-    <label class="block">
-      <span>Last opp bilde:</span>
-      <input type="file" accept="image/*" on:change={handleFileUpload} class="w-full p-2 border rounded-md" />
-    </label>
-
     <button type="submit" disabled={loading} class="w-full bg-blue-600 text-white p-3 rounded-md hover:bg-blue-700">
       {loading ? '<span class="loading"></span> Sender...' : "Send inn rapport"}
     </button>
   </form>
-
-  <h2 class="text-xl font-bold mt-6">Innsendte RUH-rapporter</h2>
-  {#if reports.length === 0}
-    <p>Ingen rapporter sendt inn ennå.</p>
-  {:else}
-    <div class="mt-4 w-full max-w-lg space-y-4">
-      {#each reports as report}
-        <div class="p-4 bg-white shadow-md rounded-lg">
-          <p class="font-bold text-lg">📍 {report.sted} | 📅 {report.dato} | ⏰ {report.klokkeslett}</p>
-          <p><strong>📝 Beskrivelse:</strong> {report.beskrivelse}</p>
-          <p><strong>📌 Resultat:</strong> {report.resultat}</p>
-          <p><strong>⚠️ Årsak:</strong> {report.aarsak}</p>
-          <p><strong>✅ Tiltak:</strong> {report.tiltak}</p>
-          {#if report.bilde_url}
-            <img src={report.bilde_url} alt="Bilde" class="mt-2 w-full max-w-xs object-cover rounded-md" />
-          {/if}
-        </div>
-      {/each}
-    </div>
-  {/if}
 </div>
+
