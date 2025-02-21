@@ -6,4 +6,6 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // ✅ Attach Supabase to the window object for debugging
-window.supabase = supabase;
+if (typeof window !== "undefined") {
+  window.supabase = supabase;
+}
