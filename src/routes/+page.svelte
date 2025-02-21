@@ -123,8 +123,12 @@
 </style>
 
 <div class="min-h-screen w-full p-4 bg-gray-100 flex flex-col items-center">
-  <img src="/logo.png" alt="Company Logo" class="w-1/10 h-auto mb-4 max-w-xs" style="max-width: 10%; height: auto;" />
-  <h1 class="text-3xl font-bold text-primary text-center mb-6 w-full flex justify-center">Registrer avvik</h1>
+  <div class="w-full flex justify-center">
+    <img src="/logo.png" alt="Company Logo" class="w-1/10 h-auto mb-4 max-w-xs" style="max-width: 10%; height: auto;" />
+</div>
+  <div class="w-full flex justify-center">
+    <h1 class="text-3xl font-bold text-primary text-center mb-6">Registrer avvik</h1>
+</div>
 
   {#if success}
     <p class="success-message">✅ Rapport sendt inn!</p>
