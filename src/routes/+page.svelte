@@ -90,32 +90,32 @@
     <p class="success-message bg-green-200 text-green-800 p-3 rounded-md">✅ Rapport sendt inn!</p>
   {/if}
 
-  <form on:submit|preventDefault={submitReport} class="w-full max-w-lg bg-white shadow-md rounded-lg p-6 space-y-4">
-    <label class="block">
+  <form on:submit|preventDefault={submitReport} class="w-full max-w-lg bg-white shadow-md rounded-lg p-6 space-y-4 flex flex-col">
+    <label class="block w-full">
       <span>Sted:</span>
       <input type="text" bind:value={sted} required class="w-full p-2 border rounded-md" />
     </label>
-    <label class="block">
+    <label class="block w-full">
       <span>Dato:</span>
       <input type="date" bind:value={dato} required class="w-full p-2 border rounded-md" />
     </label>
-    <label class="block">
+    <label class="block w-full">
       <span>Klokkeslett:</span>
       <input type="time" bind:value={klokkeslett} required class="w-full p-2 border rounded-md" />
     </label>
-    <label class="block">
+    <label class="block w-full">
       <span>Beskrivelse:</span>
       <textarea bind:value={beskrivelse} required class="w-full p-2 border rounded-md"></textarea>
     </label>
-    <label class="block">
+    <label class="block w-full">
       <span>Resultat:</span>
       <textarea bind:value={resultat} required class="w-full p-2 border rounded-md"></textarea>
     </label>
-    <label class="block">
+    <label class="block w-full">
       <span>Årsak:</span>
       <textarea bind:value={aarsak} required class="w-full p-2 border rounded-md"></textarea>
     </label>
-    <label class="block">
+    <label class="block w-full">
       <span>Tiltak:</span>
       <textarea bind:value={tiltak} required class="w-full p-2 border rounded-md"></textarea>
     </label>
