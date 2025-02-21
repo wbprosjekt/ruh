@@ -36,14 +36,20 @@
 
   async function fetchReports() {
     try {
-      const { data, error } = await supabase.from('ruh_rapporter').select('*').order('dato', { ascending: false });
+      console.log("🔄 Fetching reports...");
+      const { data, error } = await supabase.from("ruh_rapporter").select("*");
+
       if (error) {
-        console.error('Error fetching reports:', error);
+        console.error("❌ Error fetching reports:", error);
+        alert("Kunne ikke hente data: " + error.message);
+      } else if (!data || data.length === 0) {
+        console.warn("⚠️ Ingen rapporter funnet i databasen.");
       } else {
+        console.log("✅ Data hentet fra Supabase:", data);
         reports = data;
       }
     } catch (err) {
-      console.error('Fetching reports error:', err);
+      console.error("🚨 Kritisk feil ved henting av data:", err);
     }
   }
 
@@ -84,7 +90,7 @@
         </tr>
       </thead>
       <tbody>
-        {#each reports as report}
+        {#each reports as report (report.id)}
           <tr>
             <td class="border p-2">{report.sted}</td>
             <td class="border p-2">{report.dato}</td>
@@ -97,7 +103,6 @@
       </tbody>
     </table>
   {:else}
-    <p class="text-center">Ingen rapporter funnet.</p>
+    <p class="text-center text-red-500">⚠️ Ingen rapporter funnet.</p>
   {/if}
 </div>
-
