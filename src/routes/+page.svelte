@@ -82,48 +82,83 @@
   onMount(fetchReports);
 </script>
 
+<style>
+  .container {
+    max-width: 600px;
+    width: 100%;
+  }
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  label {
+    display: flex;
+    flex-direction: column;
+    font-weight: bold;
+  }
+  input, textarea, button {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  button {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  button:hover {
+    background-color: #0056b3;
+  }
+  .success-message {
+    text-align: center;
+    font-weight: bold;
+    padding: 0.5rem;
+    border-radius: 4px;
+    background-color: #d4edda;
+    color: #155724;
+  }
+</style>
+
 <div class="min-h-screen w-full p-4 bg-gray-100 flex flex-col items-center">
-  <img src="/logo.png" alt="Company Logo" class="w-24 h-auto mb-4" />
+  <img src="/logo.png" alt="Company Logo" class="w-16 h-auto mb-4" />
   <h1 class="text-3xl font-bold text-primary text-center mb-6">RUH Rapportering</h1>
 
   {#if success}
-    <p class="success-message bg-green-200 text-green-800 p-3 rounded-md">✅ Rapport sendt inn!</p>
+    <p class="success-message">✅ Rapport sendt inn!</p>
   {/if}
 
-  <form on:submit|preventDefault={submitReport} class="w-full max-w-lg bg-white shadow-md rounded-lg p-6 space-y-4">
-    <div class="flex flex-col space-y-4">
-      <label class="block">
-        <span>Sted:</span>
-        <input type="text" bind:value={sted} required class="w-full p-2 border rounded-md" />
+  <div class="container bg-white p-6 shadow-md rounded-lg">
+    <form on:submit|preventDefault={submitReport}>
+      <label>Sted:
+        <input type="text" bind:value={sted} required />
       </label>
-      <label class="block">
-        <span>Dato:</span>
-        <input type="date" bind:value={dato} required class="w-full p-2 border rounded-md" />
+      <label>Dato:
+        <input type="date" bind:value={dato} required />
       </label>
-      <label class="block">
-        <span>Klokkeslett:</span>
-        <input type="time" bind:value={klokkeslett} required class="w-full p-2 border rounded-md" />
+      <label>Klokkeslett:
+        <input type="time" bind:value={klokkeslett} required />
       </label>
-      <label class="block">
-        <span>Beskrivelse:</span>
-        <textarea bind:value={beskrivelse} required class="w-full p-2 border rounded-md"></textarea>
+      <label>Beskrivelse:
+        <textarea bind:value={beskrivelse} required></textarea>
       </label>
-      <label class="block">
-        <span>Resultat:</span>
-        <textarea bind:value={resultat} required class="w-full p-2 border rounded-md"></textarea>
+      <label>Resultat:
+        <textarea bind:value={resultat} required></textarea>
       </label>
-      <label class="block">
-        <span>Årsak:</span>
-        <textarea bind:value={aarsak} required class="w-full p-2 border rounded-md"></textarea>
+      <label>Årsak:
+        <textarea bind:value={aarsak} required></textarea>
       </label>
-      <label class="block">
-        <span>Tiltak:</span>
-        <textarea bind:value={tiltak} required class="w-full p-2 border rounded-md"></textarea>
+      <label>Tiltak:
+        <textarea bind:value={tiltak} required></textarea>
       </label>
-    </div>
-    <button type="submit" disabled={loading} class="w-full bg-blue-600 text-white p-3 rounded-md hover:bg-blue-700">
-      {loading ? '<span class="loading"></span> Sender...' : "Send inn rapport"}
-    </button>
-  </form>
+      <label>Last opp bilde:
+        <input type="file" accept="image/*" on:change={handleFileUpload} />
+      </label>
+      <button type="submit" disabled={loading}>
+        {loading ? 'Sender...' : "Send inn rapport"}
+      </button>
+    </form>
+  </div>
 </div>
-
