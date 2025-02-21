@@ -4,7 +4,7 @@ import preprocess from 'svelte-preprocess';
 export default {
   kit: {
     adapter: adapter({
-      runtime: 'node18'  // Force Node.js 18 in Vercel
+      runtime: 'nodejs18.x'  // Correct runtime format for Vercel
     })
   },
   preprocess: preprocess()
