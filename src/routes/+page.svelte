@@ -121,7 +121,7 @@
       <input type="file" accept="image/*" on:change={handleFileUpload} class="mt-1 block w-full p-2 border rounded-md focus:ring focus:ring-blue-300">
     </label>
 
-    <button type="submit" class="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 transition" {disabled:loading}>
+    <button type="submit" class="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 transition" disabled={loading}>
       {loading ? 'Sender...' : 'Send inn rapport'}
     </button>
   </form>
