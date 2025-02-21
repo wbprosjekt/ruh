@@ -10,25 +10,32 @@
     try {
       const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
       if (sessionError || !sessionData?.session) {
-        console.warn('User is not logged in, redirecting...');
+        console.warn("🔴 User is not logged in, redirecting...");
+        window.location.href = "/admin/login";
         return;
       }
 
       user = sessionData.session.user;
+      console.log("👤 Logged in user:", user.email);
 
+      // Fetch admin user info
       const { data, error: adminError } = await supabase
-        .from('admin_users')
-        .select('email')
-        .eq('email', user.email);
+        .from("admin_users")
+        .select("email")
+        .eq("email", user.email);
+
+      console.log("🔍 Admin check result:", data);
 
       if (adminError || !data || data.length === 0) {
-        console.warn('User is not an admin, redirecting...');
+        console.warn("🚨 User is not an admin, redirecting...");
+        window.location.href = "/admin/login";
         return;
       }
 
+      console.log("✅ Admin verified!");
       fetchReports();
     } catch (err) {
-      console.error('Authentication error:', err);
+      console.error("⚠️ Authentication error:", err);
     } finally {
       loading = false;
     }
@@ -106,3 +113,4 @@
     <p class="text-center text-red-500">⚠️ Ingen rapporter funnet.</p>
   {/if}
 </div>
+
