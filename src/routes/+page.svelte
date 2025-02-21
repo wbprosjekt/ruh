@@ -12,6 +12,16 @@
   let bildeUrl = "";
   let loading = false;
   let success = false;
+  let reports = [];
+
+  async function fetchReports() {
+    const { data, error } = await supabase.from("ruh_rapporter").select("*").order("dato", { ascending: false });
+    if (error) {
+      console.error("❌ Error fetching reports:", error);
+    } else {
+      reports = data;
+    }
+  }
 
   async function handleFileUpload(event) {
     const file = event.target.files[0];
@@ -58,6 +68,7 @@
     } else {
       console.log("✅ Report successfully submitted:", data);
       success = true;
+      fetchReports();
 
       // Clear form fields
       sted = dato = klokkeslett = beskrivelse = resultat = aarsak = tiltak = "";
@@ -65,42 +76,81 @@
     }
     loading = false;
   }
+
+  onMount(fetchReports);
 </script>
 
-<div class="container">
+<div class="min-h-screen w-full p-4 bg-gray-100">
   <h1 class="text-3xl font-bold text-primary text-center">RUH Rapportering</h1>
 
   {#if success}
     <p class="success-message">✅ Rapport sendt inn!</p>
   {/if}
 
-  <form on:submit|preventDefault={submitReport} class="mt-4">
-    <label>Sted:</label>
-    <input type="text" bind:value={sted} required />
+  <form on:submit|preventDefault={submitReport} class="mt-4 space-y-4">
+    <label class="block">
+      <span>Sted:</span>
+      <input type="text" bind:value={sted} required class="w-full p-2 border rounded-md" />
+    </label>
 
-    <label>Dato:</label>
-    <input type="date" bind:value={dato} required />
+    <label class="block">
+      <span>Dato:</span>
+      <input type="date" bind:value={dato} required class="w-full p-2 border rounded-md" />
+    </label>
 
-    <label>Klokkeslett:</label>
-    <input type="time" bind:value={klokkeslett} required />
+    <label class="block">
+      <span>Klokkeslett:</span>
+      <input type="time" bind:value={klokkeslett} required class="w-full p-2 border rounded-md" />
+    </label>
 
-    <label>Beskrivelse av hendelsen:</label>
-    <textarea bind:value={beskrivelse} required></textarea>
+    <label class="block">
+      <span>Beskrivelse:</span>
+      <textarea bind:value={beskrivelse} required class="w-full p-2 border rounded-md"></textarea>
+    </label>
 
-    <label>Resultat/utfall:</label>
-    <textarea bind:value={resultat} required></textarea>
+    <label class="block">
+      <span>Resultat:</span>
+      <textarea bind:value={resultat} required class="w-full p-2 border rounded-md"></textarea>
+    </label>
 
-    <label>Årsak:</label>
-    <textarea bind:value={aarsak} required></textarea>
+    <label class="block">
+      <span>Årsak:</span>
+      <textarea bind:value={aarsak} required class="w-full p-2 border rounded-md"></textarea>
+    </label>
 
-    <label>Tiltak:</label>
-    <textarea bind:value={tiltak} required></textarea>
+    <label class="block">
+      <span>Tiltak:</span>
+      <textarea bind:value={tiltak} required class="w-full p-2 border rounded-md"></textarea>
+    </label>
 
-    <label>Last opp bilde:</label>
-    <input type="file" accept="image/*" on:change={handleFileUpload} />
+    <label class="block">
+      <span>Last opp bilde:</span>
+      <input type="file" accept="image/*" on:change={handleFileUpload} class="w-full p-2 border rounded-md" />
+    </label>
 
-    <button type="submit" disabled={loading}>
+    <button type="submit" disabled={loading} class="w-full bg-blue-600 text-white p-3 rounded-md hover:bg-blue-700">
       {loading ? '<span class="loading"></span> Sender...' : "Send inn rapport"}
     </button>
   </form>
+
+  <h2 class="text-xl font-bold mt-6">Innsendte RUH-rapporter</h2>
+  {#if reports.length === 0}
+    <p>Ingen rapporter sendt inn ennå.</p>
+  {:else}
+    <div class="mt-4 space-y-4">
+      {#each reports as report}
+        <div class="p-4 bg-white shadow rounded-md">
+          <p class="font-bold text-lg">📍 {report.sted} | 📅 {report.dato} | ⏰ {report.klokkeslett}</p>
+          <p><strong>📝 Beskrivelse:</strong> {report.beskrivelse}</p>
+          <p><strong>📌 Resultat:</strong> {report.resultat}</p>
+          <p><strong>⚠️ Årsak:</strong> {report.aarsak}</p>
+          <p><strong>✅ Tiltak:</strong> {report.tiltak}</p>
+          {#if report.bilde_url}
+            <img src={report.bilde_url} alt="Bilde" class="mt-2 w-full max-w-xs object-cover rounded-md" />
+          {/if}
+        </div>
+      {/each}
+    </div>
+  {/if}
 </div>
+
